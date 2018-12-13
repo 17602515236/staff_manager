@@ -56,5 +56,3 @@ def system_init():
 system_init()#初始化系统
 while True:
     input_command()
-input_stadd = ['zhj','28','17605148579','ceo','2018-6-8']
-add_staff(input_stadd)
