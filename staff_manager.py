@@ -4,6 +4,7 @@ __layout={}
 
 
 #添加新员工
+#添加新员工
 def add_staff(staff_str):
     #转化输入字符串为字典
     new_staff = dict(zip(__layout[1:],staff_str.split(',')))
