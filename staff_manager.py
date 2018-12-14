@@ -24,14 +24,6 @@ def add_staff(staff_str):
     f.close()
 
 
-
-
-
-
-
-
-
-
 def find_checkout(func):
     def tmp_func(cmd):
         #解析find指令find [filed] from [table] where [condition]
@@ -39,9 +31,17 @@ def find_checkout(func):
             cmd = cmd.split()
             _filed = cmd[cmd.index('find') + 1:cmd.index('from')]
             _table = cmd[cmd.index('from') + 1:cmd.index('where')]
-            _condition = ''.join(cmd[cmd.index('where') + 1:])
-            print(_filed,_table,_condition)
-            func([__layout.index("name"),__layout.index("phone")],"age > 20")
+            _condition = cmd[cmd.index('where') + 1:]
+            if 'like' in _condition:
+                _condition_para = "{} in {}".format(_condition[2],_condition[0])
+            else:
+                _condition_para = ''.join(_condition)
+            if '*' in _filed:
+                filed_para = list(range(len(__layout)))
+            else:
+                filed_para = [__layout.index(x) for x in _filed]
+
+            func(filed_para,_condition_para)
         else:
             print("ERROR Format of command find")
             return
@@ -58,7 +58,7 @@ def find_staff(filed,condition_str):
         name = line.split(',')[1]
         age = int(line.split(',')[2])
         phone = line.split(',')[3]
-        plex = line.split(',')[4]
+        dept = line.split(',')[4]
         enroll_date = line.split(',')[5]
         if eval(condition_str):
             print(','.join([line.split(',')[x] for x in filed]))
@@ -67,18 +67,6 @@ def find_staff(filed,condition_str):
         print("Find {} Staff informations".format(flags))
     f.close()
      
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -108,6 +96,48 @@ def delete_staff(cmd):
     f_new.close()
     os.rename("./staff.new","./staff.txt")
 
+
+
+#修改用户信息
+def motify_checkout(func):
+    def tmp_func(cmd):
+        if "UPDATE" in cmd and "SET" in cmd and 'WHERE' in cmd:
+            cmd = cmd.split()
+            _table = cmd[cmd.index('UPDATE') + 1:cmd.index('SET')]
+            _motify = cmd[cmd.index('SET') + 1:cmd.index('WHERE')]
+            _condition = cmd[cmd.index('WHERE') + 1:]
+
+            _value= ''.join(_motify).split('=')[1]
+            _motify = ''.join(_motify).split('=')[0]
+            _condition = ''.join(_condition).replace("=","==")
+            func(_motify,_value,_condition)
+        else:
+            print("ERROR Arguments in command UPDATE")
+    return tmp_func
+
+@motify_checkout
+def motify_staff(motify,val,match):
+    f = open("./staff.txt",mode = 'r')
+    f1 = open("./staff.new",mode = 'w')
+    f1.write(f.readline())
+    for line in f:
+        s_id = int(line.split(',')[0])
+        name = line.split(',')[1]
+        age = int(line.split(',')[2])
+        phone = line.split(',')[3]
+        dept = line.split(',')[4]
+        enroll_date = line.split(',')[5]
+        if eval(match):
+            line = line.strip().split(',')
+            line[__layout.index(motify)] = val
+            f1.write(','.join(line) + '\n')
+        else:
+            f1.write(line)
+    f.close()
+    f1.close()
+    os.rename("./staff.new","./staff.txt")
+
+
 #获取用户命令
 def input_command():
     cmd = input(">>>:").strip()
@@ -116,14 +146,13 @@ def input_command():
         return
     cmd_anasys = (cmd.split())
     if cmd_anasys[0] == 'add' and len(cmd_anasys) == 3:
-        print("go into add_staff")
         add_staff(cmd_anasys[2])
     elif cmd_anasys[0] == 'find':
         find_staff(cmd)
     elif cmd_anasys[0] == 'del':
         delete_staff(cmd)
     elif cmd_anasys[0] == 'UPDATE':
-        print("cmd of update")
+        motify_staff(cmd)
     elif cmd_anasys[0] == 'q':
         exit()
     else:
@@ -139,6 +168,7 @@ def system_init():
 
 system_init()#初始化系统
 #find_staff([__layout.index("name"),__layout.index("phone")],"age > 20")
-find_staff("find name age from staff where age > 20")
+#find_staff("find name * from staff where name like 'z'")
+motify_staff("UPDATE A SET name='wwww' WHERE name='zhj'")
 while True:
     input_command()
