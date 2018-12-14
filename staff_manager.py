@@ -23,21 +23,66 @@ def add_staff(staff_str):
         print("成功添加1条数据")
     f.close()
 
+
+
+
+
+
+
+
+
+
+def find_checkout(func):
+    def tmp_func(cmd):
+        #解析find指令find [filed] from [table] where [condition]
+        if 'find' in cmd and 'from' in cmd and 'where' in cmd:
+            cmd = cmd.split()
+            _filed = cmd[cmd.index('find') + 1:cmd.index('from')]
+            _table = cmd[cmd.index('from') + 1:cmd.index('where')]
+            _condition = ''.join(cmd[cmd.index('where') + 1:])
+            print(_filed,_table,_condition)
+            func([__layout.index("name"),__layout.index("phone")],"age > 20")
+        else:
+            print("ERROR Format of command find")
+            return
+        ##############
+    return tmp_func
 #查找员工
-def find_staff(condition_str):
+@find_checkout
+def find_staff(filed,condition_str):
+    flags=0
     f = open("./staff.txt",mode = 'r')
     f.readline()
     for line in f:
-        s_id = line.split(',')[0]
+        s_id = int(line.split(',')[0])
         name = line.split(',')[1]
-        age = line.split(',')[2]
+        age = int(line.split(',')[2])
         phone = line.split(',')[3]
         plex = line.split(',')[4]
         enroll_date = line.split(',')[5]
         if eval(condition_str):
-            print(line)
+            print(','.join([line.split(',')[x] for x in filed]))
+            flags += 1
+    else:
+        print("Find {} Staff informations".format(flags))
     f.close()
      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #删除员工
 def delete_staff(cmd):
     cmd = cmd.split()
@@ -93,7 +138,7 @@ def system_init():
     f.close()
 
 system_init()#初始化系统
-#find_staff("find name from staff where age > 20")
-find_staff("age > 10")
+#find_staff([__layout.index("name"),__layout.index("phone")],"age > 20")
+find_staff("find name age from staff where age > 20")
 while True:
     input_command()
