@@ -24,26 +24,36 @@ def add_staff(staff_str):
     f.close()
 
 #查找员工
-def find_staff(find_str):
-    condition_lst=[]
-
-    find_lst = ''.join(find_str)
-    if 'find' not in find_str or 'from' not in find_str :
-        print("command without find or from keyword")
-        return
-    filed_lst = find_str[find_lst.index['find'] + 1,find_lst.index('from')]
+def find_staff(condition_str):
+    f = open("./staff.txt",mode = 'r')
+    f.readline()
+    for line in f:
+        s_id = line.split(',')[0]
+        name = line.split(',')[1]
+        age = line.split(',')[2]
+        phone = line.split(',')[3]
+        plex = line.split(',')[4]
+        enroll_date = line.split(',')[5]
+        if eval(condition_str):
+            print(line)
+    f.close()
      
 #删除员工
-def delete_staff(__id):
-    if not __id.isdigit():
-        print("错误的ID")
+def delete_staff(cmd):
+    cmd = cmd.split()
+    if len(cmd) != 3:
+        print("error number of arguments of del")
         return
+    if not cmd[2].isdigit():
+        print("input error")
+        return
+        
     f_old = open("./staff.txt",mode = 'r')
     f_new = open("./staff.new",mode = 'w')
     flags = 0
     f_new.write(f_old.readline())
     for line in f_old:
-        if line.split(',')[0] !=__id:
+        if line.split(',')[0] != cmd[2]:
             f_new.write(line)
         else:
             flags += 1
@@ -66,7 +76,7 @@ def input_command():
     elif cmd_anasys[0] == 'find':
         find_staff(cmd)
     elif cmd_anasys[0] == 'del':
-        print("cmd of del")
+        delete_staff(cmd)
     elif cmd_anasys[0] == 'UPDATE':
         print("cmd of update")
     elif cmd_anasys[0] == 'q':
@@ -84,6 +94,6 @@ def system_init():
 
 system_init()#初始化系统
 #find_staff("find name from staff where age > 20")
-delete_staff('1')
+find_staff("age > 10")
 while True:
     input_command()
