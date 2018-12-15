@@ -27,20 +27,32 @@ def add_staff(staff_str):
 def find_checkout(func):
     def tmp_func(cmd):
         #解析find指令find [filed] from [table] where [condition]
-        if 'find' in cmd and 'from' in cmd and 'where' in cmd:
+        if 'find' in cmd and ' from ' in cmd and ' where ' in cmd:
             cmd = cmd.split()
             _filed = cmd[cmd.index('find') + 1:cmd.index('from')]
             _table = cmd[cmd.index('from') + 1:cmd.index('where')]
             _condition = cmd[cmd.index('where') + 1:]
+            if len(_filed) == 0 or len(_table) == 0 or len(_condition) == 0:
+                print("ERROR value of [filed] or [table] or [condition]")
+                return
+            print(_condition)
+            print(_filed)
+            if True not in [x in _condition for x in __layout] or True not in [x in _filed for x in __layout]:
+                print("Unknown filed in [conditon] or in [filed]")
+                return
             if 'like' in _condition:
                 _condition_para = "{} in {}".format(_condition[2],_condition[0])
+            elif :
+                _condition_para = ''.join(_condition).replace('=','==')
             else:
                 _condition_para = ''.join(_condition)
+                print(_condition_para)
+
             if '*' in _filed:
                 filed_para = list(range(len(__layout)))
             else:
                 filed_para = [__layout.index(x) for x in _filed]
-
+            
             func(filed_para,_condition_para)
         else:
             print("ERROR Format of command find")
